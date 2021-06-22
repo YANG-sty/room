@@ -7,7 +7,7 @@ spring:
     mode: HTML
     encoding: UTF-8
     cache: false
-    prefix: classpath:/templates/
+    prefix: classpath:/templates/2
     suffix: .html
   resources:
     static-locations: classpath:/static/
