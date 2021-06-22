@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>会议室预约系统</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" href="/layui/css/layui.css">
+<link rel="stylesheet" href="/css/global.css">
+</head>
+<body>
+
+	<div class="fly-header layui-bg-cyan">
+		<div class="layui-container">
+			<div style="color: #00F7DE">会议室预约系统</div>
+
+			<ul class="layui-nav" lay-bar="disabled" style="float: right">
+				<li class="layui-nav-item">
+					<div style="color: #1E9FFF" id="userName">
+						用户名：<span th:text="${session.nickname}" ></span>&nbsp;&nbsp;&nbsp;
+					</div>
+				</li>
+				<li class="layui-nav-item">
+					<div class="layui-form layui-form-pane layui-tab-item layui-show">
+						<button type="button" class="layui-btn-sm" id="logOutId" style="text-align: center; text-decoration: underline; color: red">退出</button>
+					</div>
+				</li>
+			</ul>
+		</div>
+
+
+
+	</div>
+
+
+	<div class="layui-container fly-marginTop">
+
+		<div class="fly-panel-user">
+			<div class="layui-tab layui-tab-brief" lay-filter="user">
+				<ul class="layui-tab-title" id="LAY_mine">
+					<li class="layui-this" lay-id="info">会议室</li>
+					<li lay-id="pass">修改密码</li>
+				</ul>
+				<div class="layui-tab-content" style="padding: 20px 0;">
+					<div class="layui-form layui-form-pane layui-tab-item layui-show">
+						<div class="layui-form-item">
+							<div class="layui-input-inline">
+								<button class="layui-btn" lay-filter="room1" lay-submit>一号会议室</button>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-input-inline">
+								<button class="layui-btn" lay-filter="room2" lay-submit>二号会议室</button>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-input-inline">
+								<button class="layui-btn" lay-filter="room3" lay-submit>三号会议室</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="layui-form layui-form-pane layui-tab-item">
+						<div class="layui-form-item">
+							<label for="L_user_password" class="layui-form-label">当前密码</label>
+							<div class="layui-input-inline">
+								<input type="password" id="L_user_password" name="userPassword" required lay-verify="required" autocomplete="off" class="layui-input">
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label for="L_pass" class="layui-form-label">新密码</label>
+							<div class="layui-input-inline">
+								<input type="password" id="L_pass" name="newPassword" required lay-verify="required" autocomplete="off" class="layui-input">
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label for="L_repass" class="layui-form-label">确认密码</label>
+							<div class="layui-input-inline">
+								<input type="password" id="L_repass" name="repass" required lay-verify="required" autocomplete="off" class="layui-input">
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<button class="layui-btn" key="set-mine" lay-filter="password" lay-submit>确认修改</button>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+
+	<script src="/layui/layui.js"></script>
+	<script>
+
+
+		layui.use([ 'form', 'element', 'upload'], function() {
+			var element = layui.element;
+			var form = layui.form;
+			var $ = layui.$;
+			var upload = layui.upload;
+
+			$('#logOutId').on('click', function(){
+				console.log("logOutId");
+				$.ajax({
+					type : "get",
+					url : '/logout',
+					async : false,
+					cache : false,
+					success : function(result) {
+						location.reload();
+					}
+				});
+			});
+
+			form.on('submit(login)', function(data) {
+				$.ajax({
+					type : "post",
+					url : '/user/login',
+					data : data.field,
+					async : false,
+					cache : false,
+					success : function(result) {
+						if (result.status == 1) {
+							location.reload();
+						} else {
+							layer.msg(result.message);
+						}
+					}
+				});
+			});
+			form.on('submit(room1)', function(data) {
+				layer.open({
+					type: 2,
+					anim: 0,
+					skin: 'layui-layer-lan',
+					title: '一号会议室',
+					fix: false,
+					shadeClose: true,
+					area: ['1000px', '600px'],
+					content: '/room?roomId=room1',
+					cancel: function(index, layero){
+						layer.close(index);
+						return false;
+					}
+				});
+				return false;
+			});
+			form.on('submit(room2)', function(data) {
+				layer.open({
+					type: 2,
+					anim: 0,
+					skin: 'layui-layer-lan',
+					title: '二号会议室',
+					fix: false,
+					shadeClose: true,
+					area: ['1000px', '600px'],
+					content: '/room?roomId=room2',
+					cancel: function(index, layero){
+						layer.close(index);
+						return false;
+					}
+				});
+				console.log(data.field.roomid);
+				return false;
+			});
+			form.on('submit(room3)', function(data) {
+				layer.open({
+					type: 2,
+					anim: 0,
+					skin: 'layui-layer-lan',
+					title: '三号会议室',
+					fix: false,
+					shadeClose: true,
+					area: ['1000px', '600px'],
+					content: '/room?roomId=room3',
+					cancel: function(index, layero){
+						layer.close(index);
+						return false;
+					}
+				});
+				console.log(data.field.roomid);
+				return false;
+			});
+			form.on('submit(password)', function(data) {
+				if (data.field.repass != data.field.newPassword) {
+					layer.msg('两次密码不一致', function(){
+
+					});
+					return false;
+				}
+				delete data.field.repass;
+				$.ajax({
+					type : "post",
+					url : '/user/password',
+					data : data.field,
+					async : false,
+					cache : false,
+					success : function(result) {
+						layer.msg(result.message);
+					}
+				});
+				return false;
+			});
+		});
+	</script>
+
+</body>
+</html>

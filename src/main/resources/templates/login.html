@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>登陆</title>
+<link rel="stylesheet" href="/layui/css/layui.css">
+<link rel="stylesheet" href="/css/global.css">
+</head>
+<body>
+
+	<div class="fly-header layui-bg-black">
+		<div class="layui-container">
+			<a class="fly-logo" href="/">会议室预约系统</a>
+		</div>
+	</div>
+
+
+	<div class="layui-container fly-marginTop">
+		<div class="fly-panel fly-panel-user" pad20>
+			<div class="layui-tab layui-tab-brief"   lay-filter="user">
+				<ul class="layui-tab-title">
+					<li class="layui-this">登入</li>
+					<li>注册</li>
+				</ul>
+				<div class="layui-tab-content" id="LAY_ucm" style="padding: 20px 0;">
+					<div class="layui-tab-item layui-show">
+						<div class="layui-form layui-form-pane">
+								<div class="layui-form-item">
+									<label for="L_user_name" class="layui-form-label">账号</label>
+									<div class="layui-input-inline">
+										<input type="text" id="L_user_name" name="userId" required placeholder="用户名/邮箱/手机号" lay-verify="required" autocomplete="off" class="layui-input">
+									</div>
+								</div>
+								<div class="layui-form-item">
+									<label for="L_user_password" class="layui-form-label">密码</label>
+									<div class="layui-input-inline password_keyword">
+										<input type="password" id="L_user_password" name="userPassword" required lay-verify="required" autocomplete="off" class="layui-input">
+									</div>
+								</div>
+								<!--<div class="layui-form-item">
+									<label class="layui-form-label">验证码</label>
+									<div class="layui-input-inline">
+										<input type="text" id="L_user_verCode" name="verCode" required lay-verify="required" autocomplete="off" class="layui-input">
+										<img id="verImg" width="130px" height="48px" data-type="refreshVerCode"/>
+									</div>
+								</div>-->
+								<div class="layui-form-item">
+									<button class="layui-btn" lay-filter="login" lay-submit>立即登陆</button>
+								</div>
+						</div>
+					</div>
+					<div class="layui-tab-item">
+						<div class="layui-form layui-form-pane">
+							<div class="layui-form-item">
+								<label for="L_user_name" class="layui-form-label">用户名</label>
+								<div class="layui-input-inline">
+									<input type="text" id="L_user_name" name="userId" required lay-verify="required" autocomplete="off" class="layui-input">
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<label for="L_user_nickname" class="layui-form-label">昵称</label>
+								<div class="layui-input-inline">
+									<input type="text" id="L_user_nickname" name="userNickname" required lay-verify="required" autocomplete="off" class="layui-input">
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<label for="L_user_password" class="layui-form-label">密码</label>
+								<div class="layui-input-inline password_keyword">
+									<input type="password" id="L_user_password" name="userPassword" required lay-verify="required" autocomplete="off" class="layui-input">
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<label for="L_repass" class="layui-form-label">确认密码</label>
+								<div class="layui-input-inline password_keyword">
+									<input type="password" id="L_repass" name="newPassword" required lay-verify="required" autocomplete="off" class="layui-input">
+								</div>
+							</div>
+							<div class="layui-form-item">
+								<button class="layui-btn" lay-filter="register" lay-submit>立即注册</button>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="/layui/layui.js"></script>
+	<script>
+		layui.use([ 'form', 'element' ], function() {
+			var element = layui.element;
+			var form = layui.form;
+			var $ = layui.$;
+			var verKey;
+			function refreshVerCodeFunction(){
+				$.post('/captcha', function(res) {
+			        $('#verImg').attr('src', res.image);
+			    },'json');
+			}
+			refreshVerCodeFunction();
+			$('#verImg').on('click', function(){
+	            var type = $(this).data('type');
+	            active[type] ? active[type].call(this) : '';
+	        });
+
+	        var active = {
+	        	refreshVerCode:function () {
+	        		refreshVerCodeFunction();
+	            }
+	        }
+			form.on('submit(login)', function(data) {
+				$.ajax({
+					type : "post",
+					url : '/user/login',
+					data : data.field,
+					async : false,
+					cache : false,
+					success : function(result) {
+						if (result.status == 1) {
+							location.reload();
+						} else {
+							layer.msg(result.message);
+						}
+					}
+				});
+			});
+			form.on('submit(register)', function(data) {
+				if (data.field.userPassword != data.field.newPassword) {
+					layer.msg('两次密码不一致',function(){
+						
+					});
+					return false;
+				}
+				
+				$.ajax({
+					type : "post",
+					url : '/user/register',
+					data : data.field,
+					async : false,
+					cache : false,
+					success : function(result) {
+						if (result.status == 1) {
+							location.reload();
+						} else {
+							layer.msg(result.message);
+						}
+					}
+				});
+			});
+			
+		});
+	</script>
+
+</body>
+</html>
